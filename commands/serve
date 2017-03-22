@@ -1,5 +1,7 @@
 #!/bin/bash
 
+httppipe="httppipe"
+
 function decode {
 	# decode url symbols such as %20
 	# from: http://unix.stackexchange.com/questions/159253/decoding-url-encoding-percent-encoding
@@ -81,7 +83,7 @@ function fn_out {
 				fi
 			fi
 		fi
-	done < httppipe
+	done < $httppipe
 }
 
 function fn_in {
@@ -90,9 +92,9 @@ function fn_in {
 		line=$(echo $line | sed "s/^\s$/\n/g")
 
 		if [ -z "$line" ]; then
-			echo "" >> httppipe
+			echo "" >> $httppipe
 		else
-			echo $line > httppipe
+			echo $line > $httppipe
 		fi
 
 	done
@@ -100,17 +102,17 @@ function fn_in {
 
 function serve {
 	# delete pipe
-	if [ -e httppipe ]; then
-		rm httppipe
+	if [ -e $httppipe ]; then
+		rm $httppipe
 	fi
 
 	echo "listening at port 4000"
 
 	while true;
 	do
-		mkfifo httppipe
+		mkfifo $httppipe
 		nc -l -p 4000 0< <(fn_out) 1> >(fn_in)
-		rm httppipe
+		rm $httppipe
 	done;
 }
 
