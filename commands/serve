@@ -2,6 +2,14 @@
 
 httppipe="httppipe"
 
+if [[ $# -lt 1 ]]; then
+	cat doc/serve.md
+	exit;
+fi
+
+root_folder="apps/"$1"/public"
+app_name=$1
+
 function decode {
 	# decode url symbols such as %20
 	# from: http://unix.stackexchange.com/questions/159253/decoding-url-encoding-percent-encoding
@@ -11,7 +19,7 @@ function decode {
 
 function route {
 	if [ "$1" == "" ]; then
-		show_file public/index.html
+		show_file $root_folder"/index.html"
 	fi
 }
 
@@ -106,6 +114,8 @@ function serve {
 		rm $httppipe
 	fi
 
+	echo "serving "$app_name" (apps/"$app_name"/public/)"
+	echo ""
 	echo "listening at port 4000"
 
 	while true;

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ $# -lt 2 ]; then
+	cat doc/new.md
+elif [[ "$1" = "app" ]]; then
+	if [[ -e apps/$2 ]]; then
+		echo "Error: apps/$2 already exists"
+	else
+		echo "Creating app \""$2"\" in \"apps/"$2"\""
+		name=$2
+		cp -r templates/app/apps-folder/appname apps/$name
+	fi
+fi

@@ -1,3 +1,9 @@
 #!/bin/bash
 
-./commands/$1
+if [ $# = 0 ]; then
+	cat doc/hacky.md
+else
+	./commands/$1 $2 $3 $4 $5
+fi
+
+
