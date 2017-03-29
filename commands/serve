@@ -1,14 +1,21 @@
 #!/bin/bash
 
-httppipe="httppipe"
+# $$: current PID
+httppipe="httppipe-"$$
 
-if [[ $# -lt 1 ]]; then
+# exit trap to remove the pipe when the script gets stopped
+function remove_pipe {
+	rm $httppipe
+}
+
+trap remove_pipe EXIT
+
+if [[ $HACKY_CONTEXT = "APP" ]]; then
+	root_folder=$HACKY_APP_FOLDER"/public"
+else
 	cat doc/serve.md
-	exit;
+	exit
 fi
-
-root_folder="apps/"$1"/public"
-app_name=$1
 
 function decode {
 	# decode url symbols such as %20
@@ -114,8 +121,7 @@ function serve {
 		rm $httppipe
 	fi
 
-	echo "serving "$app_name" (apps/"$app_name"/public/)"
-	echo ""
+	echo "serving public folder"
 	echo "listening at port 4000"
 
 	while true;
