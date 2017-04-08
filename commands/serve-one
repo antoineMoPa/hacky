@@ -1,0 +1,83 @@
+#!/bin/bash
+
+if [[ $HACKY_CONTEXT = "APP" ]]; then
+	root_folder=$HACKY_APP_FOLDER"/public"
+else
+	cat doc/serve.md
+	exit
+fi
+
+function decode {
+	# decode url symbols such as %20
+	# from: http://unix.stackexchange.com/questions/159253/decoding-url-encoding-percent-encoding
+	urlhuman=$(echo $1 | sed 's@+@ @g;s@%@\\x@g' | xargs -0 printf "%b")
+	echo $urlhuman
+}
+
+function route {
+	if [[ "$2" == "" ]]; then
+		show_file $root_folder"/index.html"
+	else
+		filepath=$root_folder$1
+		# Try serving the file if it exists
+		if [[ -e "$filepath" ]]; then
+			show_file $filepath
+		else
+			# Error
+			show_file $root_folder"/404.html"
+		fi
+	fi
+}
+
+function show_file {
+	if [[ -e "$1" ]]; then
+		if [[ "$1" =~ \.html$ ]]; then
+			./commands/http_wrap.native "200 OK" "text/html" < <(cat $1)
+		elif [[ "$1" =~ \.css$ ]]; then
+			./commands/http_wrap.native "200 OK" "text/css" < <(cat $1)
+		else
+			./commands/http_wrap.native "502 FORBIDEN" "text/plain" < <(echo "forbiden")
+		fi
+	else
+		./commands/http_wrap.native "404 Not Found" < <(echo "404")
+	fi
+}
+
+function parse {
+	REQ=""
+	line=""
+	lcount=0
+	
+	url=""
+	
+	while read -r line;
+	do
+		line=$(echo $line | sed "s/^\s$/\n/g")
+		REQ="${REQ}${line}"
+		
+		if [ -z "${line}" ]; then
+			
+			url1=$(echo $url | cut -d "/" -f2)
+			url2=$(echo $url | cut -d "/" -f3)
+			url3=$(echo $url | cut -d "/" -f3)
+			url4=$(echo $url | cut -d "/" -f3)
+			
+			# route and reply
+			route $url $url1 $url2 $url3 $url4
+			exit
+		else
+			lcount=$(($lcount+1))
+			
+			line=$(echo $line| sed "s/\r//g")
+			
+			if [ $lcount = 1 ]; then
+				# find path
+				# (by removing GET/POST and HTTP)
+				url=$(echo $line | sed "s/GET \|POST //g" | sed "s/ HTTP\/[0-9\.]*//g")
+				
+			fi
+		fi
+	done
+}
+
+parse

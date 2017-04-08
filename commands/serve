@@ -1,134 +1,17 @@
 #!/bin/bash
 
-# $$: current PID
-httppipe="httppipe-"$$
-
-# exit trap to remove the pipe when the script gets stopped
-function remove_pipe {
-	rm $httppipe
-}
-
-trap remove_pipe EXIT
-
-if [[ $HACKY_CONTEXT = "APP" ]]; then
-	root_folder=$HACKY_APP_FOLDER"/public"
-else
-	cat doc/serve.md
-	exit
-fi
-
-function decode {
-	# decode url symbols such as %20
-	# from: http://unix.stackexchange.com/questions/159253/decoding-url-encoding-percent-encoding
-	urlhuman=$(echo $1 | sed 's@+@ @g;s@%@\\x@g' | xargs -0 printf "%b")
-	echo $urlhuman
-}
-
-function route {
-	if [ "$1" == "" ]; then
-		show_file $root_folder"/index.html"
-	fi
-}
-
-function show_file {
-	if [[ "$1" =~ \.html$ ]]; then
-		reply "200 OK" "text/html" < <(cat $1)
-	else
-		reply "404 Not Found" < <(echo "404")
-	fi
-}
-
-# give http reply
-# $1 code
-# $2 content type
-# stdin message
-function reply {
-	echo "HTTP/1.1 $1"
-	echo "Content-type: $2"
-	echo "Content-Encoding: UTF-8"
-
-	MESSAGE=""
-
-	while read line; do
-		MESSAGE="${MESSAGE}""${line}"$'\r\n'
-	done
-
-	LCOUNT=$(echo "$MESSAGE" | wc -c)
-
-	echo "Content-Length: "$LCOUNT
-	echo "Connection: close"
-	echo ""
-
-	echo "${MESSAGE}"
-}
-
-function fn_out {
-	REQ=""
-	line=""
-	lcount=0
-
-	url=""
-
-	while true;
-	do
-		if read line; then
-			REQ="${REQ}${line}"
-
-			if [ -z "${line}" ]; then
-
-				url1=$(echo $url | cut -d "/" -f2)
-				url2=$(echo $url | cut -d "/" -f3)
-				url3=$(echo $url | cut -d "/" -f3)
-				url4=$(echo $url | cut -d "/" -f3)
-
-				# route and reply
-				route $url1 $url2 $url3 $url4
-
-				return
-			else
-				lcount=$(($lcount+1))
-
-				line=$(echo $line| sed "s/\r//g")
-
-				if [ $lcount = 1 ]; then
-					# find path
-					# (by removing GET/POST and HTTP)
-					url=$(echo $line | sed "s/GET \|POST //g" | sed "s/ HTTP\/[0-9\.]*//g")
-
-				fi
-			fi
-		fi
-	done < $httppipe
-}
-
-function fn_in {
-	while read -r line;
-	do
-		line=$(echo $line | sed "s/^\s$/\n/g")
-
-		if [ -z "$line" ]; then
-			echo "" >> $httppipe
-		else
-			echo $line > $httppipe
-		fi
-
-	done
-}
+PORT=4002
 
 function serve {
-	# delete pipe
-	if [ -e $httppipe ]; then
-		rm $httppipe
-	fi
-
 	echo "serving public folder"
-	echo "listening at port 4000"
-
+	echo "listening at port $PORT"
+	
 	while true;
 	do
-		mkfifo $httppipe
-		nc -l -p 4000 0< <(fn_out) 1> >(fn_in)
-		rm $httppipe
+		if ! nc -c './hacky serve-one' -l -p $PORT; then
+			# CTRL+C: exit
+			exit
+		fi
 	done;
 }
 
