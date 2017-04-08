@@ -9,8 +9,10 @@ Bash & native web framework
 	# Build native commands
 	./hacky build-native
 
+	# Create an app
+	./hacky new app whatever
+	
 # [tab][tab] Bash completion
-
 Run this to enable some hacky command completions
 
 	source hacky-complete.sh
