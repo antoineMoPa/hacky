@@ -1,17 +1,20 @@
 #!/bin/bash
 
-root_folder=$1
-
-function decode {
-	# decode url symbols such as %20
-	# from: http://unix.stackexchange.com/questions/159253/decoding-url-encoding-percent-encoding
-	urlhuman=$(echo $1 | sed 's@+@ @g;s@%@\\x@g' | xargs -0 printf "%b")
-	echo $urlhuman
-}
+root_folder=$1"/public"
+api_folder=$1"/api"
 
 function route {
 	if [[ "$2" == "" ]]; then
 		show_file $root_folder"/index.html"
+	elif [[ "$2" == "api" ]]; then
+		# remove url part after question mark (?)
+		file=$(echo $3 | sed "s/\?.*//")
+		if [[ -e "$api_folder/$file" ]]; then
+			echo $1 | . "$api_folder/$file"
+		else
+			# Error
+			show_file $root_folder"/404.html"
+		fi
 	else
 		filepath=$root_folder$1
 		# Try serving the file if it exists

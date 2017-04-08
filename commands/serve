@@ -3,7 +3,7 @@
 PORT=4002
 
 if [[ $HACKY_CONTEXT = "APP" ]]; then
-	root_folder=$HACKY_APP_FOLDER"/public"
+	root_folder=$HACKY_APP_FOLDER
 else
 	cat doc/serve.md
 	exit
