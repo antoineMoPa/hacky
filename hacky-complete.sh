@@ -4,7 +4,17 @@ function _hacky {
 
 	cur=${COMP_WORDS[COMP_CWORD]}
 
-	commands=$(ls commands | grep -o "^[A-Za-z\-]*$")
+	commands_folder=""
+	
+	if [[ -e commands ]]; then
+		# in hacky root
+		commands_folder=commands
+	elif [[ -e ../../commands ]]; then
+		# in app/native folder
+		commands_folder=../../commands
+	fi
+
+	commands=$(ls $commands_folder | grep -o "^[A-Za-z\-]*$")
 	
 	COMPREPLY=( $(compgen -W '$commands' -- $cur ) )
 }
