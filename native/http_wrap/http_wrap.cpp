@@ -3,35 +3,35 @@
 
 int main(int argc, char ** argv)
 {
-    std::string path = "/";
+	std::string path = "/";
 
-    if(argc >= 2)
-    {
-        path = argv[1];
-    }
+	if(argc >= 2)
+	{
+		path = argv[1];
+	}
 
-    std::string mime = "text/plain";
+	std::string mime = "text/plain";
 
-    if(argc >= 3)
-    {
-        mime = argv[2];
-    }
+	if(argc >= 3)
+	{
+		mime = argv[2];
+	}
 
-    std::string buffer;
-    std::string line;
-    
-    while (std::getline(std::cin, line))
-    {
-        buffer += line + "\r\n";
-    }
+	std::string buffer;
+	std::string line;
+	
+	while (std::getline(std::cin, line))
+	{
+		buffer += line + "\r\n";
+	}
 
-    std::cout << "HTTP/1.1 " << path << "\r\n";
-    std::cout << "Content-type: " << mime << "\r\n";
-    std::cout << "Content-Encoding: UTF-8" << "\r\n";
-    std::cout << "Content-Length: " << buffer.length() << "\r\n";
-    std::cout << "Connection: close" << "\r\n";
-    std::cout << "" << "\r\n";
+	std::cout << "HTTP/1.1 " << path << "\r\n";
+	std::cout << "Content-type: " << mime << "\r\n";
+	std::cout << "Content-Encoding: UTF-8" << "\r\n";
+	std::cout << "Content-Length: " << buffer.length() << "\r\n";
+	std::cout << "Connection: close" << "\r\n";
+	std::cout << "" << "\r\n";
 	std::cout << buffer << "\r\n";
 
-    return 0;
+	return 0;
 }
