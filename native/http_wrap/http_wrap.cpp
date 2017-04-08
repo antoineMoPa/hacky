@@ -22,7 +22,7 @@ int main(int argc, char ** argv)
     
     while (std::getline(std::cin, line))
     {
-        buffer += line;
+        buffer += line + "\r\n";
     }
 
     std::cout << "HTTP/1.1 " << path << "\r\n";
@@ -31,7 +31,7 @@ int main(int argc, char ** argv)
     std::cout << "Content-Length: " << buffer.length() << "\r\n";
     std::cout << "Connection: close" << "\r\n";
     std::cout << "" << "\r\n";
-    std::cout << buffer  << "\r\n";
+	std::cout << buffer << "\r\n";
 
     return 0;
 }

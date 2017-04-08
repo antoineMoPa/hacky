@@ -1,11 +1,6 @@
 #!/bin/bash
 
-if [[ $HACKY_CONTEXT = "APP" ]]; then
-	root_folder=$HACKY_APP_FOLDER"/public"
-else
-	cat doc/serve.md
-	exit
-fi
+root_folder=$1
 
 function decode {
 	# decode url symbols such as %20
@@ -29,17 +24,28 @@ function route {
 	fi
 }
 
+function get_mime {
+	if [[ "$1" =~ \.html$ ]]; then
+		echo "text/html"
+	elif [[ "$1" =~ \.css$ ]]; then
+		echo "text/css"
+	elif [[ "$1" =~ \.js$ ]]; then
+		echo "text/javascript"
+	else
+		echo "text/plain"
+	fi
+}
+
 function show_file {
 	if [[ -e "$1" ]]; then
-		if [[ "$1" =~ \.html$ ]]; then
-			./commands/http_wrap.native "200 OK" "text/html" < <(cat $1)
-		elif [[ "$1" =~ \.css$ ]]; then
-			./commands/http_wrap.native "200 OK" "text/css" < <(cat $1)
+		if [[ "$1" =~ \.css|\.js|\.html$ ]]; then
+			mime=$(get_mime "$1")
+			./commands/http_wrap.native "200 OK" $mime < <(cat $1)
 		else
 			./commands/http_wrap.native "502 FORBIDEN" "text/plain" < <(echo "forbiden")
 		fi
 	else
-		./commands/http_wrap.native "404 Not Found" < <(echo "404")
+		./commands/http_wrap.native "404 Not Found" < <(echo "404 $1")
 	fi
 }
 

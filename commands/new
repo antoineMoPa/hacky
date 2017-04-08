@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ $HACKY_CONTEXT = "APP" ]]; then
+	echo "Please run new in hacky folder. (currently in an app)"
+	exit
+fi
+
+
 if [ $# -lt 2 ]; then
 	cat doc/new.md
 elif [[ "$1" = "app" ]]; then
@@ -9,6 +15,9 @@ elif [[ "$1" = "app" ]]; then
 		echo "Creating app \""$2"\" in \"apps/"$2"\""
 		name=$2
 		cp -r templates/app/apps-folder/appname apps/$name
+		cd apps/$name
+		sed -i "s/appname/$name/g" public/index.html
+		./hacky install
 	fi
 elif [[ "$1" = "native" ]]; then
 	if [[ -e native/$2 ]]; then

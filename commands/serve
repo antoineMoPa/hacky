@@ -2,13 +2,20 @@
 
 PORT=4002
 
+if [[ $HACKY_CONTEXT = "APP" ]]; then
+	root_folder=$HACKY_APP_FOLDER"/public"
+else
+	cat doc/serve.md
+	exit
+fi
+
 function serve {
 	echo "serving public folder"
 	echo "listening at port $PORT"
 	
 	while true;
 	do
-		if ! nc -c './hacky serve-one' -l -p $PORT; then
+		if ! nc -c "./hacky serve-one $root_folder" -l -p $PORT; then
 			# CTRL+C: exit
 			exit
 		fi
