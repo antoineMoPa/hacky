@@ -22,4 +22,8 @@ function serve {
 	done;
 }
 
+for i in $(seq 1 10); do
+	serve &
+done
+
 serve
