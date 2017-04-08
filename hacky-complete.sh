@@ -2,12 +2,11 @@
 function _hacky {
 	local cur
 
-	COMPREPLY=( )
 	cur=${COMP_WORDS[COMP_CWORD]}
+
+	commands=$(ls commands | grep -o "^[A-Za-z\-]*$")
 	
-	echo $cur;
-	
-	COMPREPLY=($COMP_WORDS[$COMP_CWORDS])
+	COMPREPLY=( $(compgen -W '$commands' -- $cur ) )
 }
 
 complete -F _hacky ./hacky
