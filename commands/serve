@@ -10,9 +10,6 @@ else
 fi
 
 function serve {
-	echo "serving public folder"
-	echo "listening at port $PORT"
-	
 	while true;
 	do
 		if ! nc -c "./hacky serve-one $root_folder" -l -p $PORT; then
@@ -22,6 +19,11 @@ function serve {
 	done;
 }
 
+echo "serving public folder"
+echo "listening at port $PORT"
+
+# Start a couple of servers
+# (otherwise, it sometimes cannot handle the load)
 for i in $(seq 1 10); do
 	serve &
 done
