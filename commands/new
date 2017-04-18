@@ -30,4 +30,6 @@ elif [[ "$1" = "native" ]]; then
 		mv nativename.cpp $name.cpp
 		sed -i "s/nativename/$name/g" Makefile 
 	fi
+else
+	cat doc/new.md
 fi
