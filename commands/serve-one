@@ -3,6 +3,12 @@
 root_folder=$1"/public"
 api_folder=$1"/api"
 
+http_wrap_command="./commands/http_wrap"
+
+if [[ -e "./commands/http_wrap.native" ]]; then
+	http_wrap_command="./commands/http_wrap.native"
+fi
+
 function route {
 	if [[ "$2" == "" ]]; then
 		show_file $root_folder"/index.html"
@@ -43,12 +49,12 @@ function show_file {
 	if [[ -e "$1" ]]; then
 		if [[ "$1" =~ \.css|\.js|\.html$ ]]; then
 			mime=$(get_mime "$1")
-			./commands/http_wrap.native "200 OK" $mime < <(cat $1)
+			$http_wrap_command "200 OK" $mime < <(cat $1)
 		else
-			./commands/http_wrap.native "502 FORBIDEN" "text/plain" < <(echo "forbiden")
+			$http_wrap_command "502 FORBIDEN" "text/plain" < <(echo "forbiden")
 		fi
 	else
-		./commands/http_wrap.native "404 Not Found" < <(echo "404 $1")
+		$http_wrap_command "404 Not Found" < <(echo "404 $1")
 	fi
 }
 
