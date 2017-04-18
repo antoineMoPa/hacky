@@ -1,4 +1,4 @@
 #!/bin/bash
 
-echo "hello" | ./hacky http_wrap.native "text/plain"
+echo "hello" | ./hacky http_wrap "text/plain"
 
