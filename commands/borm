@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# BORM - the Bash Object Relational Model
+
+if [[ $# -ge 1 ]]; then
+	if [[ $1 = "raw" ]]; then
+		# Pass raw input to raw
+		cat | ./commands/_borm/raw
+	else
+		cat doc/borm.md
+	fi
+else
+	cat doc/borm.md
+fi
