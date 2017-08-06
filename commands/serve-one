@@ -88,8 +88,7 @@ function parse {
 			if [ $lcount = 1 ]; then
 				# find path
 				# (by removing GET/POST and HTTP)
-				url=$(echo $line | sed "s/GET \|POST //g" | sed "s/ HTTP\/[0-9\.]*//g")
-				
+				url=$(echo $line | sed "s/GET \|POST \|OPTIONS //g" | sed "s/ HTTP\/[0-9\.]*//g")
 			fi
 		fi
 	done
